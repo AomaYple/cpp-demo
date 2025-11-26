@@ -1,0 +1,88 @@
+cmake_minimum_required(VERSION 4.0 FATAL_ERROR)
+
+project(practice LANGUAGES CXX)
+
+add_executable(${PROJECT_NAME})
+
+set_target_properties(${PROJECT_NAME}
+    PROPERTIES
+    CXX_STANDARD ${CMAKE_CXX_STANDARD_LATEST}
+    CXX_STANDARD_REQUIRED ON
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+    COMPILE_WARNING_AS_ERROR ON
+    LINK_WARNING_AS_ERROR ON
+)
+
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
+    src/*.cpp
+)
+
+target_sources(${PROJECT_NAME}
+    PRIVATE
+    ${SOURCES}
+)
+
+option(NATIVE "Enable native optimization")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(${PROJECT_NAME}
+        PRIVATE
+        -Wall -Wextra -Wpedantic
+        $<$<CONFIG:Debug>:-g3 -ggdb3 -Og -fsanitize=address -fsanitize=leak -fsanitize=undefined>
+        $<$<CONFIG:Release>:-Ofast>
+        $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:-march=native>
+    )
+    target_link_options(${PROJECT_NAME}
+        PRIVATE
+        $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=leak -fsanitize=undefined>
+        $<$<CONFIG:Release>:-Ofast -ffunction-sections -fdata-sections>
+
+        LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
+        $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
+        $<$<CONFIG:Release>:LINKER:--gc-sections,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
+    )
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(${PROJECT_NAME}
+        PRIVATE
+        -stdlib=libc++
+        -Wall -Wextra -Wpedantic
+        $<$<CONFIG:Debug>:-g3 -glldb -Og -fsanitize=address -fsanitize=leak -fsanitize=undefined>
+        $<$<CONFIG:Release>:-O3 -ffast-math>
+        $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:-march=native>
+    )
+    target_link_options(${PROJECT_NAME}
+        PRIVATE
+        $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=leak -fsanitize=undefined>
+        $<$<CONFIG:Release>:-O3 -ffast-math -ffunction-sections -fdata-sections>
+
+        LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
+        $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
+        $<$<CONFIG:Release>:LINKER:--gc-sections,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
+    )
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(${PROJECT_NAME}
+        PRIVATE
+        /permissive- /utf-8 /W4 /MP
+        $<$<CONFIG:Debug>:/sdl /fsanitize=address>
+        $<$<CONFIG:Release>:/Ob3 /GT /Gy /fp:fast>
+    )
+    target_link_options(${PROJECT_NAME}
+        PRIVATE
+        $<$<CONFIG:Release>:/OPT:REF,ICF /LTCG:incremental>
+    )
+endif ()
+
+option(SCCACHE "Enable sccache")
+if (SCCACHE)
+    set_target_properties(${PROJECT_NAME}
+        PROPERTIES
+        RULE_LAUNCH_COMPILE sccache
+    )
+endif ()
+
+option(MOLD "Enable MOLD linker")
+if (MOLD AND UNIX)
+    set_target_properties(${PROJECT_NAME}
+        PROPERTIES
+        LINKER_TYPE MOLD
+    )
+endif ()
