@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.0 FATAL_ERROR)
 
-project(practice LANGUAGES CXX)
+project(cpp-demo LANGUAGES CXX)
 
 add_executable(${PROJECT_NAME})
 
