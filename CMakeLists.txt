@@ -28,7 +28,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         PRIVATE
         -Wall -Wextra -Wpedantic
         $<$<CONFIG:Debug>:-g3 -ggdb3 -Og -fsanitize=address -fsanitize=leak -fsanitize=undefined>
-        $<$<CONFIG:Release>:-Ofast>
+        $<$<CONFIG:Release>:-Ofast -fvisibility=hidden>
         $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:-march=native>
     )
     target_link_options(${PROJECT_NAME}
@@ -38,7 +38,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 
         LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
         $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-        $<$<CONFIG:Release>:LINKER:--gc-sections,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
+        $<$<CONFIG:Release>:LINKER:--gc-sections,-s,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
     )
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     target_compile_options(${PROJECT_NAME}
@@ -46,7 +46,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL
         -stdlib=libc++
         -Wall -Wextra -Wpedantic
         $<$<CONFIG:Debug>:-g3 -glldb -Og -fsanitize=address -fsanitize=leak -fsanitize=undefined>
-        $<$<CONFIG:Release>:-O3 -ffast-math>
+        $<$<CONFIG:Release>:-O3 -ffast-math -fvisibility=hidden>
         $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:-march=native>
     )
     target_link_options(${PROJECT_NAME}
@@ -56,7 +56,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL
 
         LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
         $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-        $<$<CONFIG:Release>:LINKER:--gc-sections,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
+        $<$<CONFIG:Release>:LINKER:--gc-sections,-s,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
     )
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${PROJECT_NAME}
