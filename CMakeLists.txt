@@ -40,7 +40,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
         $<$<CONFIG:Release>:LINKER:--gc-sections,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
     )
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     target_compile_options(${PROJECT_NAME}
         PRIVATE
         -stdlib=libc++
@@ -73,14 +73,24 @@ endif ()
 
 option(SCCACHE "Enable sccache")
 if (SCCACHE)
+    find_program(SCCACHE_EXEC sccache)
+    if (NOT SCCACHE_EXEC)
+        message(FATAL_ERROR "sccache not found but SCCACHE option is enabled")
+    endif ()
+
     set_target_properties(${PROJECT_NAME}
         PROPERTIES
-        RULE_LAUNCH_COMPILE sccache
+        RULE_LAUNCH_COMPILE ${SCCACHE_EXEC}
     )
 endif ()
 
 option(MOLD "Enable MOLD linker")
 if (MOLD AND UNIX)
+    find_program(MOLD_EXEC mold)
+    if (NOT MOLD_EXEC)
+        message(FATAL_ERROR "MOLD linker not found but MOLD option is enabled")
+    endif ()
+
     set_target_properties(${PROJECT_NAME}
         PROPERTIES
         LINKER_TYPE MOLD
