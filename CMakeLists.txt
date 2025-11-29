@@ -38,7 +38,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         >
 
         $<$<CONFIG:Release>:
-        $<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3>
+        $<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3 -ffast-math>
         -fvisibility=hidden
         >
 
@@ -49,7 +49,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=leak -fsanitize=undefined>
 
         $<$<CONFIG:Release>:
-        $<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3>
+        $<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3 -ffast-math>
         -ffunction-sections -fdata-sections
         >
 
