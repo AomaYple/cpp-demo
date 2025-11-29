@@ -8,9 +8,9 @@ set_target_properties(${PROJECT_NAME}
     PROPERTIES
     CXX_STANDARD ${CMAKE_CXX_STANDARD_LATEST}
     CXX_STANDARD_REQUIRED ON
-    INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
     COMPILE_WARNING_AS_ERROR ON
     LINK_WARNING_AS_ERROR ON
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
 )
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
@@ -38,7 +38,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         >
 
         $<$<CONFIG:Release>:
-        $<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3 -ffast-math>
+        $<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3>
         -fvisibility=hidden
         >
 
@@ -49,7 +49,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=leak -fsanitize=undefined>
 
         $<$<CONFIG:Release>:
-        $<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3 -ffast-math>
+        $<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3>
         -ffunction-sections -fdata-sections
         >
 
