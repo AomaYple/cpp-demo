@@ -1,16 +1,17 @@
-cmake_minimum_required(VERSION 4.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 4.1 FATAL_ERROR)
 
-project(cpp-demo LANGUAGES CXX)
+project(cpp-demo VERSION 1.0.0 LANGUAGES CXX)
 
 add_executable(${PROJECT_NAME})
 
+set(CMAKE_FIND_REQUIRED ON)
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
     CXX_STANDARD ${CMAKE_CXX_STANDARD_LATEST}
     CXX_STANDARD_REQUIRED ON
     COMPILE_WARNING_AS_ERROR ON
     LINK_WARNING_AS_ERROR ON
-    INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
 )
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
@@ -73,9 +74,6 @@ endif ()
 option(SCCACHE "Enable sccache")
 if (SCCACHE)
     find_program(SCCACHE_EXEC sccache)
-    if (NOT SCCACHE_EXEC)
-        message(FATAL_ERROR "sccache not found but SCCACHE option is enabled")
-    endif ()
 
     set_target_properties(${PROJECT_NAME}
         PROPERTIES
@@ -86,9 +84,6 @@ endif ()
 option(MOLD "Enable MOLD linker")
 if (MOLD AND UNIX)
     find_program(MOLD_EXEC mold)
-    if (NOT MOLD_EXEC)
-        message(FATAL_ERROR "MOLD linker not found but MOLD option is enabled")
-    endif ()
 
     set_target_properties(${PROJECT_NAME}
         PROPERTIES
