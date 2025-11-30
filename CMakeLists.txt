@@ -2,11 +2,13 @@ cmake_minimum_required(VERSION 4.1 FATAL_ERROR)
 
 project(cpp-demo VERSION 1.0.0 LANGUAGES CXX)
 
-add_executable(${PROJECT_NAME})
+add_library(${PROJECT_NAME})
 
 set(CMAKE_FIND_REQUIRED ON)
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
     CXX_STANDARD ${CMAKE_CXX_STANDARD_LATEST}
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
@@ -22,6 +24,12 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
 target_sources(${PROJECT_NAME}
     PRIVATE
     ${SOURCES}
+)
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
 option(NATIVE "Enable native optimization")
@@ -91,3 +99,40 @@ if (MOLD AND UNIX)
         LINKER_TYPE MOLD
     )
 endif ()
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in ${PROJECT_NAME}Config.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
+write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
+    COMPATIBILITY SameMinorVersion
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+
+    DESTINATION
+    ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(FILES LICENSE
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/licenses/${PROJECT_NAME}
+)
+
+install(TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}Targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+install(EXPORT ${PROJECT_NAME}Targets
+    FILE ${PROJECT_NAME}Targets.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
