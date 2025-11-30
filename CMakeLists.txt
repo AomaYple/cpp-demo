@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 4.1 FATAL_ERROR)
 
 project(cpp-demo VERSION 1.0.0 LANGUAGES CXX)
 
-add_library(${PROJECT_NAME})
+add_library(${PROJECT_NAME} SHARED)
 
 set(CMAKE_FIND_REQUIRED ON)
 set_target_properties(${PROJECT_NAME}
@@ -103,7 +103,8 @@ endif ()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in ${PROJECT_NAME}Config.cmake
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+    ${PROJECT_NAME}Config.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
