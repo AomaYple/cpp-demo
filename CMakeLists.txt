@@ -2,15 +2,15 @@ cmake_minimum_required(VERSION 4.1 FATAL_ERROR)
 
 project(cpp-demo VERSION 1.0.0 LANGUAGES CXX)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CommonConfig.cmake)
+set(CMAKE_FIND_REQUIRED ON)
 
 option(NATIVE "Enable native optimization")
 option(SCCACHE "Enable sccache")
 option(MOLD "Enable MOLD linker")
 
-add_library(${PROJECT_NAME} SHARED)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CommonConfig.cmake)
 
-set(CMAKE_FIND_REQUIRED ON)
+add_library(${PROJECT_NAME} SHARED)
 
 set_common_properties(${PROJECT_NAME})
 set_common_compile_options(${PROJECT_NAME})
