@@ -5,6 +5,7 @@ project(cpp-demo VERSION 1.0.0 LANGUAGES CXX)
 add_library(${PROJECT_NAME} SHARED)
 
 set(CMAKE_FIND_REQUIRED ON)
+
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
     VERSION ${PROJECT_VERSION}
@@ -16,6 +17,13 @@ set_target_properties(${PROJECT_NAME}
     LINK_WARNING_AS_ERROR ON
     INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
 )
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    set_target_properties(${PROJECT_NAME}
+        PROPERTIES
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN ON
+    )
+endif ()
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     src/*.cpp
@@ -47,10 +55,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         -fsanitize=address -fsanitize=leak -fsanitize=undefined
         >
 
-        $<$<CONFIG:Release>:
-        $<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3 -ffast-math>
-        -fvisibility=hidden
-        >
+        $<$<CONFIG:Release>:$<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3 -ffast-math>>
 
         $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:-march=native>
     )
