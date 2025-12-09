@@ -1,3 +1,3 @@
-#include "lib.hpp"
+#include "cpp-demo.hpp"
 
 auto main() -> int { cpp_demo::hello(); }
