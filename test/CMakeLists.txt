@@ -4,8 +4,6 @@ project(cpp-demo-test VERSION 1.0.0 LANGUAGES CXX)
 
 add_executable(${PROJECT_NAME})
 
-find_package(cpp-demo)
-
 set_common_properties(${PROJECT_NAME})
 set_common_compile_options(${PROJECT_NAME})
 set_common_link_options(${PROJECT_NAME})
