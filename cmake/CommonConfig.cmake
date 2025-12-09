@@ -11,7 +11,7 @@ function(set_common_properties TARGET)
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
         set_target_properties(${TARGET}
             PROPERTIES
-            CXX_VISIBILITY_PRESET hidden
+            CXX_VISIBILITY_PRESET default
             VISIBILITY_INLINES_HIDDEN ON
         )
     endif ()
