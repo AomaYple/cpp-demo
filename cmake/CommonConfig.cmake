@@ -29,7 +29,7 @@ function(set_common_compile_options TARGET)
             -g3
             $<IF:$<CXX_COMPILER_ID:GNU>,-ggdb3,-glldb>
             -Og
-            -fsanitize=address -fsanitize=leak -fsanitize=undefined
+            -fsanitize=address -fsanitize=undefined -fsanitize=leak
             >
 
             $<$<CONFIG:Release>:$<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3 -ffast-math>>
@@ -52,7 +52,7 @@ function(set_common_link_options TARGET)
         CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         target_link_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=leak -fsanitize=undefined>
+            $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=undefined -fsanitize=leak>
 
             $<$<CONFIG:Release>:
             $<IF:$<CXX_COMPILER_ID:GNU>,-Ofast,-O3 -ffast-math>
