@@ -22,7 +22,7 @@ function(set_common_compile_options TARGET)
             PRIVATE
             -Wall -Wextra -Wpedantic
 
-            $<$<CONFIG:Debug>:-g3 -ggdb3 -Og -fsanitize=address -fsanitize=undefined -fsanitize=leak>
+            $<$<CONFIG:Debug>:-g3 -ggdb3 -Og>
 
             $<$<CONFIG:Release>:-Ofast>
 
@@ -31,9 +31,11 @@ function(set_common_compile_options TARGET)
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         target_compile_options(${TARGET}
             PRIVATE
+            -stdlib=libc++
+
             -Wall -Wextra -Wpedantic
 
-            $<$<CONFIG:Debug>:-g3 -glldb -Og -fsanitize=address -fsanitize=undefined -fsanitize=leak>
+            $<$<CONFIG:Debug>:-g3 -glldb -Og>
 
             $<$<CONFIG:Release>:-O3>
 
@@ -43,7 +45,6 @@ function(set_common_compile_options TARGET)
         target_compile_options(${TARGET}
             PRIVATE
             /permissive- /utf-8 /W4 /MP
-            $<$<CONFIG:Debug>:/sdl /fsanitize=address>
             $<$<CONFIG:Release>:/Ob3 /GT /Gy /fp:fast>
         )
     else ()
@@ -55,18 +56,16 @@ function(set_common_link_options TARGET)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         target_link_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=undefined -fsanitize=leak>
-
             $<$<CONFIG:Release>:-Ofast -ffunction-sections -fdata-sections>
 
             LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
             $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
+            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,--icf=all,--ignore-data-address-equality,-z,now>
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         target_link_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=undefined -fsanitize=leak>
+            -stdlib=libc++
 
             $<$<CONFIG:Release>:-O3 -ffunction-sections -fdata-sections>
 
@@ -115,3 +114,27 @@ function(set_common_build_tools TARGET)
         )
     endif ()
 endfunction(set_common_build_tools)
+
+function(set_sanitizer TARGET)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+        CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+        CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
+    )
+        target_compile_options(${TARGET}
+            PRIVATE
+            $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=undefined -fsanitize=leak>
+        )
+
+        target_link_options(${TARGET}
+            PRIVATE
+            $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=undefined -fsanitize=leak>
+        )
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        target_compile_options(${TARGET}
+            PRIVATE
+            /fsanitize=address
+        )
+    else ()
+        message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
+    endif ()
+endfunction(set_sanitizer)
