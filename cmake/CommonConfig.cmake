@@ -94,21 +94,19 @@ function(set_common_build_tools TARGET)
         )
     endif (SCCACHE)
 
-    if (LLD)
+    if (LINKER STREQUAL "LLD")
         find_program(LLD_EXEC lld)
 
         set_target_properties(${TARGET}
             PROPERTIES
             LINKER_TYPE LLD
         )
-    endif (LLD)
-
-    if (MOLD)
+    elseif (LINKER STREQUAL "MOLD")
         find_program(MOLD_EXEC mold)
 
         set_target_properties(${TARGET}
             PROPERTIES
             LINKER_TYPE MOLD
         )
-    endif (MOLD)
+    endif ()
 endfunction(set_common_build_tools)
