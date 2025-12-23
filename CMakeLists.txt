@@ -6,6 +6,7 @@ set(CMAKE_FIND_REQUIRED ON)
 
 option(NATIVE "Enable native optimization")
 option(SCCACHE "Enable sccache")
+option(LLD "Enable LLD linker")
 option(MOLD "Enable MOLD linker")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CommonConfig.cmake)
