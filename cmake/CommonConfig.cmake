@@ -7,14 +7,7 @@ function(set_common_properties TARGET)
         LINK_WARNING_AS_ERROR ON
         INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
     )
-    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-        set_target_properties(${TARGET}
-            PROPERTIES
-            CXX_VISIBILITY_PRESET default
-            VISIBILITY_INLINES_HIDDEN ON
-        )
-    endif ()
-endfunction()
+endfunction(set_common_properties)
 
 function(set_common_compile_options TARGET)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -60,7 +53,7 @@ function(set_common_link_options TARGET)
 
             LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
             $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,--icf=all,--ignore-data-address-equality,-z,now>
+            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         target_link_options(${TARGET}
@@ -71,7 +64,7 @@ function(set_common_link_options TARGET)
 
             LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
             $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,--icf=all,--ignore-data-address-equality,-z,now>
+            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_link_options(${TARGET}
@@ -107,13 +100,18 @@ function(set_common_build_tools TARGET)
             PROPERTIES
             LINKER_TYPE MOLD
         )
-
-        target_link_options(${TARGET}
-            PRIVATE
-            $<$<CONFIG:Release>:LINKER:--pack-dyn-relocs=relr>
-        )
     endif ()
 endfunction(set_common_build_tools)
+
+function(set_hidden_visibility TARGET)
+    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+        set_target_properties(${TARGET}
+            PROPERTIES
+            CXX_VISIBILITY_PRESET hidden
+            VISIBILITY_INLINES_HIDDEN ON
+        )
+    endif ()
+endfunction(set_hidden_visibility)
 
 function(set_sanitizer TARGET)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
