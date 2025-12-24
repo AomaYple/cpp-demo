@@ -21,6 +21,7 @@ set_common_properties(${PROJECT_NAME})
 set_common_compile_options(${PROJECT_NAME})
 set_common_link_options(${PROJECT_NAME})
 set_common_build_tools(${PROJECT_NAME})
+set_hidden_visibility(${PROJECT_NAME})
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES

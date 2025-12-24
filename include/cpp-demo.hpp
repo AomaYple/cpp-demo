@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cpp-demo-export.hpp"
+
 namespace cpp_demo {
-    auto hello() -> void;
+    CPP_DEMO_EXPORT auto hello() -> void;
 }    // namespace cpp_demo

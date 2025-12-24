@@ -109,6 +109,7 @@ function(set_hidden_visibility TARGET)
             PROPERTIES
             CXX_VISIBILITY_PRESET hidden
             VISIBILITY_INLINES_HIDDEN ON
+            DEFINE_SYMBOL CPP_DEMO_EXPORTS
         )
     endif ()
 endfunction(set_hidden_visibility)
