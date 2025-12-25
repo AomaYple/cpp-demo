@@ -11,8 +11,7 @@ AlignConsecutiveShortCaseStatements:
 AlignEscapedNewlines: Left
 AlignOperands: Align
 AlignTrailingComments:
-  Kind: Always
-  OverEmptyLines: 2
+  Kind: Never
 AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowBreakBeforeNoexceptSpecifier: Always
