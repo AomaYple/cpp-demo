@@ -53,7 +53,7 @@ function(set_common_link_options TARGET)
 
             LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
             $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
+            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,-z,now>
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         target_link_options(${TARGET}
@@ -64,7 +64,7 @@ function(set_common_link_options TARGET)
 
             LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
             $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr,-z,now>
+            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,-z,now>
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_link_options(${TARGET}
@@ -99,6 +99,11 @@ function(set_common_build_tools TARGET)
         set_target_properties(${TARGET}
             PROPERTIES
             LINKER_TYPE MOLD
+        )
+
+        target_link_options(${TARGET}
+            PRIVATE
+            $<$<CONFIG:Release>:LINKER:--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr>
         )
     endif ()
 endfunction(set_common_build_tools)
