@@ -94,6 +94,11 @@ function(set_common_build_tools TARGET)
             PROPERTIES
             LINKER_TYPE LLD
         )
+
+        target_link_options(${TARGET}
+            PRIVATE
+            $<$<CONFIG:Release>:LINKER:--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr>
+        )
     elseif (LINKER STREQUAL "MOLD")
         find_program(MOLD_EXEC mold)
 
