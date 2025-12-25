@@ -4,7 +4,6 @@ function(set_common_properties TARGET)
         CXX_STANDARD ${CMAKE_CXX_STANDARD_LATEST}
         CXX_STANDARD_REQUIRED ON
         COMPILE_WARNING_AS_ERROR ON
-        LINK_WARNING_AS_ERROR ON
         INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
     )
 endfunction(set_common_properties)
