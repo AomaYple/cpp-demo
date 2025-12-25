@@ -131,7 +131,7 @@ function(set_sanitizer TARGET)
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_compile_options(${TARGET}
             PRIVATE
-            /fsanitize=address
+            $<$<CONFIG:Debug>:/fsanitize=address>
         )
     else ()
         message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
