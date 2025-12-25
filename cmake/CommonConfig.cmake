@@ -31,8 +31,6 @@ function(set_common_compile_options TARGET)
 
             $<$<CONFIG:Debug>:-g3 -glldb -Og>
 
-            $<$<CONFIG:Release>:-O3>
-
             $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:-march=native>
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
