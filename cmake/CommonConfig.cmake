@@ -5,7 +5,7 @@ function(set_common_properties TARGET)
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS ON
         COMPILE_WARNING_AS_ERROR ON
-        LINK_WARNING_AS_ERROR ON
+        LINK_WARNING_AS_ERROR OFF
         INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
     )
 endfunction(set_common_properties)
