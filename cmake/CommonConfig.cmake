@@ -19,32 +19,6 @@ function(set_common_build_tools TARGET)
             RULE_LAUNCH_COMPILE ${SCCACHE_EXEC}
         )
     endif (SCCACHE)
-
-    if (LINKER STREQUAL "LLD")
-        find_program(LLD_EXEC lld)
-
-        set_target_properties(${TARGET}
-            PROPERTIES
-            LINKER_TYPE LLD
-        )
-
-        target_link_options(${TARGET}
-            PRIVATE
-            $<$<CONFIG:Release>:LINKER:--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr>
-        )
-    elseif (LINKER STREQUAL "MOLD")
-        find_program(MOLD_EXEC mold)
-
-        set_target_properties(${TARGET}
-            PROPERTIES
-            LINKER_TYPE MOLD
-        )
-
-        target_link_options(${TARGET}
-            PRIVATE
-            $<$<CONFIG:Release>:LINKER:--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr>
-        )
-    endif ()
 endfunction(set_common_build_tools)
 
 function(set_common_compiler_options TARGET)
@@ -111,6 +85,14 @@ function(set_common_linker_options TARGET)
         target_link_options(${TARGET}
             PRIVATE
             $<$<CONFIG:Release>:/OPT:REF,ICF /LTCG:incremental>
+        )
+    elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
+        target_link_options(${TARGET}
+            PRIVATE
+            LINKER:--warn-common,--warn-once,--no-undefined
+            $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
+            $<$<CONFIG:Release>:LINKER:--as-needed,--gc-sections,-s,-z,now,--icf=all,--ignore-data-address-equality,
+            --pack-dyn-relocs=relr>
         )
     else ()
         message(FATAL_ERROR "Unsupported linker: ${CMAKE_CXX_COMPILER_LINKER_ID}")

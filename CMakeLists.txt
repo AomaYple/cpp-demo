@@ -4,14 +4,8 @@ project(cpp-demo VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_FIND_REQUIRED ON)
 
-option(NATIVE "Enable native optimization")
 option(SCCACHE "Enable sccache")
-
-set(LINKER "" CACHE STRING "Choose linker (empty = default, or select: LLD/MOLD)")
-set_property(CACHE LINKER PROPERTY STRINGS "LLD" "MOLD")
-if (NOT LINKER STREQUAL "" AND NOT LINKER MATCHES "^(LLD|MOLD)$")
-    message(FATAL_ERROR "LINKER must be empty, 'LLD' or 'MOLD', got: ${LINKER}")
-endif ()
+option(NATIVE "Enable native optimization")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CommonConfig.cmake)
 
