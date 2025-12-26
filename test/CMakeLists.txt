@@ -5,9 +5,12 @@ project(cpp-demo-test VERSION 1.0.0 LANGUAGES CXX)
 add_executable(${PROJECT_NAME})
 
 set_common_properties(${PROJECT_NAME})
-set_common_compile_options(${PROJECT_NAME})
-set_common_link_options(${PROJECT_NAME})
+
 set_common_build_tools(${PROJECT_NAME})
+
+set_common_compiler_options(${PROJECT_NAME})
+set_common_linker_options(${PROJECT_NAME})
+
 set_sanitizer(${PROJECT_NAME})
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
