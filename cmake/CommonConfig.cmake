@@ -50,20 +50,30 @@ function(set_common_link_options TARGET)
             PRIVATE
             $<$<CONFIG:Release>:-Ofast -ffunction-sections -fdata-sections>
 
-            LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
+            LINKER:--warn-common,--warn-once,--no-undefined
             $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,-z,now>
+            $<$<CONFIG:Release>:LINKER:--as-needed,--gc-sections,-s,-z,now>
         )
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         target_link_options(${TARGET}
             PRIVATE
             -stdlib=libc++
 
             $<$<CONFIG:Release>:-O3 -ffunction-sections -fdata-sections>
 
-            LINKER:--warn-common,--warn-once,--as-needed,--no-undefined
+            LINKER:--warn-common,--warn-once,--no-undefined
             $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-            $<$<CONFIG:Release>:LINKER:--gc-sections,-s,-z,now>
+            $<$<CONFIG:Release>:LINKER:--as-needed,--gc-sections,-s,-z,now>
+        )
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+        target_link_options(${TARGET}
+            PRIVATE
+            -stdlib=libc++
+
+            $<$<CONFIG:Release>:-O3 -ffunction-sections -fdata-sections>
+
+            LINKER:-warn_commons,-undefined error
+            $<$<CONFIG:Release>:LINKER:-dead_strip_dylibs,-dead_strip,-x,-S,bind_at_load>
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_link_options(${TARGET}
