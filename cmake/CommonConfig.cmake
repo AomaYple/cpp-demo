@@ -5,7 +5,7 @@ function(set_common_properties TARGET)
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS ON
         COMPILE_WARNING_AS_ERROR ON
-        LINK_WARNING_AS_ERROR OFF
+        LINK_WARNING_AS_ERROR ON
         INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
     )
 endfunction(set_common_properties)
@@ -91,8 +91,7 @@ function(set_common_linker_options TARGET)
             PRIVATE
             LINKER:--warn-common,--warn-once,--no-undefined
             $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-            $<$<CONFIG:Release>:LINKER:--as-needed,--gc-sections,-s,-z,now,--icf=all,--ignore-data-address-equality,
-            --pack-dyn-relocs=relr>
+            $<$<CONFIG:Release>:LINKER:--as-needed,--gc-sections,-s,-z,now,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr>
         )
     else ()
         message(FATAL_ERROR "Unsupported linker: ${CMAKE_CXX_COMPILER_LINKER_ID}")
