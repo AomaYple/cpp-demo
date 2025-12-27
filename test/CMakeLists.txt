@@ -11,7 +11,7 @@ set_common_build_tools(${PROJECT_NAME})
 set_common_compiler_options(${PROJECT_NAME})
 set_common_linker_options(${PROJECT_NAME})
 
-set_sanitizer(${PROJECT_NAME})
+#set_sanitizer(${PROJECT_NAME})
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     src/*.cpp
