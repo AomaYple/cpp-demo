@@ -3,9 +3,9 @@ function(set_common_properties TARGET)
         PROPERTIES
         CXX_STANDARD ${CMAKE_CXX_STANDARD_LATEST}
         CXX_STANDARD_REQUIRED ON
-        CXX_EXTENSIONS ON
+        CXX_EXTENSIONS OFF
         COMPILE_WARNING_AS_ERROR ON
-        LINK_WARNING_AS_ERROR OFF
+        LINK_WARNING_AS_ERROR ON
         INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
     )
 endfunction(set_common_properties)
@@ -59,8 +59,8 @@ function(set_common_compiler_options TARGET)
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_compile_options(${TARGET}
             PRIVATE
-            /permissive- /utf-8 /W4 /MP
-            $<$<CONFIG:Release>:/Ob3 /GT /Gy /fp:fast>
+            /utf-8 /permissive- /W4 /MP
+            $<$<CONFIG:Release>:/Ob3 /GT /fp:fast>
         )
     else ()
         message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -84,7 +84,7 @@ function(set_common_linker_options TARGET)
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MSVC")
         target_link_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Release>:/OPT:REF,ICF /LTCG:incremental>
+            $<$<CONFIG:Release>:/OPT:REF,ICF=9,LBR /LTCG>
         )
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
         target_link_options(${TARGET}
