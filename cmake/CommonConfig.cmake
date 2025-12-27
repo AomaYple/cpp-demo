@@ -45,6 +45,8 @@ function(set_common_compiler_options TARGET)
 
             -Wall -Wextra -Wpedantic
 
+            $<$<CONFIG:Release>:-ffast-math>
+
             $<$<CONFIG:Debug>:-g3 -glldb -Og>
 
             $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:-march=native>
