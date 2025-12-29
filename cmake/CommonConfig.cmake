@@ -25,44 +25,80 @@ function(set_common_compiler_options TARGET)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         target_compile_options(${TARGET}
             PRIVATE
-            -Wall -Wextra -Wpedantic
+            -Wall
+            -Wextra
+            -Wpedantic
 
-            $<$<CONFIG:Debug>:-g3 -ggdb3 -Og>
+            $<$<CONFIG:Debug>:
+            -g3
+            -ggdb3
+            -Og
+            >
 
-            $<$<CONFIG:Release>:-Ofast>
+            $<$<CONFIG:Release>:
+            -Ofast
+            >
 
-            $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:-march=native>
+            $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:
+            -march=native
+            >
         )
 
         target_link_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Release>:-Ofast -ffunction-sections -fdata-sections>
+            $<$<CONFIG:Release>:
+            -Ofast
+            -ffunction-sections
+            -fdata-sections
+            >
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         target_compile_options(${TARGET}
             PRIVATE
             -stdlib=libc++
 
-            -Wall -Wextra -Wpedantic
+            -Wall
+            -Wextra
+            -Wpedantic
 
-            $<$<CONFIG:Release>:-ffast-math>
+            $<$<CONFIG:Release>:
+            -ffast-math
+            >
 
-            $<$<CONFIG:Debug>:-g3 -glldb -Og>
+            $<$<CONFIG:Debug>:
+            -g3
+            -glldb
+            -Og
+            >
 
-            $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:-march=native>
+            $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:
+            -march=native
+            >
         )
 
         target_link_options(${TARGET}
             PRIVATE
             -stdlib=libc++
 
-            $<$<CONFIG:Release>:-O3 -ffunction-sections -fdata-sections>
+            $<$<CONFIG:Release>:
+            -O3
+            -ffunction-sections
+            -fdata-sections
+            >
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_compile_options(${TARGET}
             PRIVATE
-            /utf-8 /permissive- /W4 /MP
-            $<$<CONFIG:Release>:/Ob3 /GT /fp:fast>
+            /utf-8
+            /permissive-
+            /W4
+            /MP
+
+            $<$<CONFIG:Release>:
+            /Ob3
+            /GT
+            /fp:fast
+            >
         )
     else ()
         message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -73,27 +109,61 @@ function(set_common_linker_options TARGET)
     if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "GNU")
         target_link_options(${TARGET}
             PRIVATE
-            LINKER:--warn-common,--warn-once,--no-undefined
-            $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-            $<$<CONFIG:Release>:LINKER:--as-needed,--gc-sections,-s,-z,now>
+            LINKER:--warn-common
+            LINKER:--warn-once
+            LINKER:--no-undefined
+
+            $<$<CONFIG:Debug>:
+            LINKER:--compress-debug-sections=zstd
+            >
+
+            $<$<CONFIG:Release>:
+            LINKER:--as-needed
+            LINKER:--gc-sections
+            LINKER:-s
+            LINKER:-z,now
+            >
         )
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "AppleClang")
         target_link_options(${TARGET}
             PRIVATE
             LINKER:-warn_commons
-            $<$<CONFIG:Release>:LINKER:-dead_strip_dylibs,-dead_strip,-S,-x>
+
+            $<$<CONFIG:Release>:
+            LINKER:-dead_strip_dylibs
+            LINKER:-dead_strip
+            LINKER:-S
+            LINKER:-x
+            >
         )
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MSVC")
         target_link_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Release>:/OPT:REF,ICF=9,LBR /LTCG>
+            $<$<CONFIG:Release>:
+            /OPT:REF,ICF=9,LBR
+            /LTCG
+            >
         )
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
         target_link_options(${TARGET}
             PRIVATE
-            LINKER:--warn-common,--warn-once,--no-undefined
-            $<$<CONFIG:Debug>:LINKER:--compress-debug-sections=zstd>
-            $<$<CONFIG:Release>:LINKER:--as-needed,--gc-sections,-s,-z,now,--icf=all,--ignore-data-address-equality,--pack-dyn-relocs=relr>
+            LINKER:--warn-common
+            LINKER:--warn-once
+            LINKER:--no-undefined
+
+            $<$<CONFIG:Debug>:
+            LINKER:--compress-debug-sections=zstd
+            >
+
+            $<$<CONFIG:Release>:
+            LINKER:--as-needed
+            LINKER:--gc-sections
+            LINKER:-s
+            LINKER:-z,now
+            LINKER:--icf=all
+            LINKER:--ignore-data-address-equality
+            LINKER:--pack-dyn-relocs=relr
+            >
         )
     else ()
         message(FATAL_ERROR "Unsupported linker: ${CMAKE_CXX_COMPILER_LINKER_ID}")
@@ -118,17 +188,25 @@ function(set_sanitizer TARGET)
     )
         target_compile_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=undefined>
+            $<$<CONFIG:Debug>:
+            -fsanitize=address
+            -fsanitize=undefined
+            >
         )
 
         target_link_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=undefined>
+            $<$<CONFIG:Debug>:
+            -fsanitize=address
+            -fsanitize=undefined
+            >
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_compile_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Debug>:/fsanitize=address>
+            $<$<CONFIG:Debug>:
+            /fsanitize=address
+            >
         )
     else ()
         message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
