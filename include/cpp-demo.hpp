@@ -6,10 +6,8 @@
     #else    // CPP_DEMO_EXPORTS
         #define CPP_DEMO_EXPORT __declspec(dllimport)
     #endif    // CPP_DEMO_EXPORTS
-#elif defined(__linux__) || defined(__APPLE__) || defined(__ANDROID__) || defined(__OHOS__)
-    #define CPP_DEMO_EXPORT __attribute__((visibility("default")))
 #else
-    #error "Unsupported platform"
+    #define CPP_DEMO_EXPORT __attribute__((visibility("default")))
 #endif
 
 namespace cpp_demo {
