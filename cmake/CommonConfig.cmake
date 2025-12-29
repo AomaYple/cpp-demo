@@ -80,8 +80,8 @@ function(set_common_linker_options TARGET)
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "AppleClang")
         target_link_options(${TARGET}
             PRIVATE
-            LINKER:-warn_commons,-undefined error
-            $<$<CONFIG:Release>:LINKER:-dead_strip_dylibs,-dead_strip,-x,-S,bind_at_load>
+            LINKER:-warn_commons
+            $<$<CONFIG:Release>:LINKER:-dead_strip_dylibs,-dead_strip,-S,-x>
         )
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MSVC")
         target_link_options(${TARGET}
