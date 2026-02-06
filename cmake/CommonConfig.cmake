@@ -22,7 +22,10 @@ function(set_common_hidden_visibility TARGET)
 endfunction(set_common_hidden_visibility)
 
 function(set_common_compiler_options TARGET)
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+        CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+        CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
+    )
         target_compile_options(${TARGET}
             PRIVATE
             -Wall
@@ -31,44 +34,6 @@ function(set_common_compiler_options TARGET)
 
             $<$<CONFIG:Debug>:
             -g3
-            -ggdb3
-            -Og
-            >
-
-            $<$<CONFIG:Release>:
-            -Ofast
-            >
-
-            $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:
-            -march=native
-            >
-        )
-
-        target_link_options(${TARGET}
-            PRIVATE
-            $<$<CONFIG:Release>:
-            -Ofast
-
-            -ffunction-sections
-            -fdata-sections
-            >
-        )
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-        target_compile_options(${TARGET}
-            PRIVATE
-            -stdlib=libc++
-
-            -Wall
-            -Wextra
-            -Wpedantic
-
-            $<$<CONFIG:Release>:
-            -ffast-math
-            >
-
-            $<$<CONFIG:Debug>:
-            -g3
-            -glldb
             -Og
             >
 
@@ -79,15 +44,53 @@ function(set_common_compiler_options TARGET)
 
         target_link_options(${TARGET}
             PRIVATE
-            -stdlib=libc++
-
-            $<$<CONFIG:Release>:
-            -O3
-
             -ffunction-sections
             -fdata-sections
             >
         )
+
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            target_compile_options(${TARGET}
+                PRIVATE
+                $<$<CONFIG:Debug>:
+                -ggdb3
+                >
+
+                $<$<CONFIG:Release>:
+                -Ofast
+                >
+            )
+
+            target_link_options(${TARGET}
+                PRIVATE
+                $<$<CONFIG:Release>:
+                -Ofast
+                >
+            )
+        else ()
+            target_compile_options(${TARGET}
+                PRIVATE
+                -stdlib=libc++
+
+                $<$<CONFIG:Debug>:
+                -glldb
+                >
+
+                $<$<CONFIG:Release>:
+                -ffast-math
+                >
+            )
+
+            target_link_options(${TARGET}
+                PRIVATE
+                -stdlib=libc++
+
+                $<$<CONFIG:Release>:
+                -O3
+                -ffast-math
+                >
+            )
+        endif ()
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_compile_options(${TARGET}
             PRIVATE
