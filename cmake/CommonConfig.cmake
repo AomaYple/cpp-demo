@@ -53,7 +53,7 @@ function(set_common_compiler_options TARGET)
             -fdata-sections
             >
         )
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         target_compile_options(${TARGET}
             PRIVATE
             -stdlib=libc++
@@ -86,38 +86,6 @@ function(set_common_compiler_options TARGET)
 
             -ffunction-sections
             -fdata-sections
-            >
-        )
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-        target_compile_options(${TARGET}
-            PRIVATE
-            -stdlib=libc++
-
-            -Wall
-            -Wextra
-            -Wpedantic
-
-            $<$<CONFIG:Release>:
-            -ffast-math
-            >
-
-            $<$<CONFIG:Debug>:
-            -g3
-            -glldb
-            -Og
-            >
-
-            $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:
-            -march=native
-            >
-        )
-
-        target_link_options(${TARGET}
-            PRIVATE
-            -stdlib=libc++
-
-            $<$<CONFIG:Release>:
-            -O3
             >
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -172,7 +140,12 @@ function(set_common_linker_options TARGET)
 
             $<$<CONFIG:Release>:
             LINKER:-dead_strip_dylibs
+            LINKER:-mark_dead_strippable_dylib
+
+            LINKER:-bind_at_load
+
             LINKER:-dead_strip
+            LINKER:-merge_zero_fill_sections
 
             LINKER:-S
             LINKER:-x
