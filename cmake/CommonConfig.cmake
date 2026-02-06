@@ -112,7 +112,10 @@ function(set_common_compiler_options TARGET)
 endfunction(set_common_compiler_options)
 
 function(set_common_linker_options TARGET)
-    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "GNU")
+    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "GNU" OR
+        CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR
+        CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD"
+    )
         target_link_options(${TARGET}
             PRIVATE
             LINKER:--warn-common
@@ -137,6 +140,17 @@ function(set_common_linker_options TARGET)
             LINKER:-s
             >
         )
+
+        if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
+            target_link_options(${TARGET}
+                PRIVATE
+                $<$<CONFIG:Release>:
+                LINKER:--icf=all
+                LINKER:--ignore-data-address-equality
+                LINKER:--pack-dyn-relocs=relr
+                >
+            )
+        endif ()
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "AppleClang")
         target_link_options(${TARGET}
             PRIVATE
@@ -161,35 +175,6 @@ function(set_common_linker_options TARGET)
             $<$<CONFIG:Release>:
             /OPT:REF,ICF=9,LBR
             /LTCG
-            >
-        )
-    elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
-        target_link_options(${TARGET}
-            PRIVATE
-            LINKER:--warn-common
-            LINKER:--warn-once
-
-            $<$<CONFIG:Debug>:
-            LINKER:--compress-debug-sections=zstd
-            >
-
-            $<$<CONFIG:Release>:
-            LINKER:--no-undefined
-            LINKER:--as-needed
-
-            LINKER:--hash-style=gnu
-
-            LINKER:-Bsymbolic
-            LINKER:--exclude-libs,ALL
-            LINKER:-z,now
-
-            LINKER:--gc-sections
-
-            LINKER:-s
-
-            LINKER:--icf=all
-            LINKER:--ignore-data-address-equality
-            LINKER:--pack-dyn-relocs=relr
             >
         )
     else ()
