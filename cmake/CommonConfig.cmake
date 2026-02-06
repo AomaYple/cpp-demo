@@ -145,17 +145,24 @@ function(set_common_linker_options TARGET)
             PRIVATE
             LINKER:--warn-common
             LINKER:--warn-once
-            LINKER:--no-undefined
 
             $<$<CONFIG:Debug>:
             LINKER:--compress-debug-sections=zstd
             >
 
             $<$<CONFIG:Release>:
+            LINKER:--no-undefined
             LINKER:--as-needed
-            LINKER:--gc-sections
-            LINKER:-s
+
+            LINKER:--hash-style=gnu
+
+            LINKER:-Bsymbolic
+            LINKER:--exclude-libs,ALL
             LINKER:-z,now
+
+            LINKER:--gc-sections
+
+            LINKER:-s
             >
         )
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "AppleClang")
@@ -166,6 +173,7 @@ function(set_common_linker_options TARGET)
             $<$<CONFIG:Release>:
             LINKER:-dead_strip_dylibs
             LINKER:-dead_strip
+
             LINKER:-S
             LINKER:-x
             >
@@ -183,17 +191,25 @@ function(set_common_linker_options TARGET)
             PRIVATE
             LINKER:--warn-common
             LINKER:--warn-once
-            LINKER:--no-undefined
 
             $<$<CONFIG:Debug>:
             LINKER:--compress-debug-sections=zstd
             >
 
             $<$<CONFIG:Release>:
+            LINKER:--no-undefined
             LINKER:--as-needed
-            LINKER:--gc-sections
-            LINKER:-s
+
+            LINKER:--hash-style=gnu
+
+            LINKER:-Bsymbolic
+            LINKER:--exclude-libs,ALL
             LINKER:-z,now
+
+            LINKER:--gc-sections
+
+            LINKER:-s
+
             LINKER:--icf=all
             LINKER:--ignore-data-address-equality
             LINKER:--pack-dyn-relocs=relr
