@@ -180,6 +180,15 @@ function(set_common_linker_options TARGET)
     else ()
         message(FATAL_ERROR "Unsupported linker: ${CMAKE_CXX_COMPILER_LINKER_ID}")
     endif ()
+
+    if (CMAKE_SYSTEM_NAME STREQUAL "Android")
+        target_link_options(${TARGET}
+            PRIVATE
+            $<$<CONFIG:Release>:
+            LINKER:--pack-dyn-relocs=android+relr
+            >
+        )
+    endif ()
 endfunction(set_common_linker_options)
 
 function(set_common_build_tools TARGET)
