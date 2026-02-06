@@ -10,16 +10,16 @@ function(set_common_properties TARGET)
     )
 endfunction(set_common_properties)
 
-function(set_common_build_tools TARGET)
-    if (SCCACHE)
-        find_program(SCCACHE_EXEC sccache)
-
+function(set_common_hidden_visibility TARGET)
+    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
         set_target_properties(${TARGET}
             PROPERTIES
-            RULE_LAUNCH_COMPILE ${SCCACHE_EXEC}
+            CXX_VISIBILITY_PRESET hidden
+            VISIBILITY_INLINES_HIDDEN ON
+            DEFINE_SYMBOL CPP_DEMO_EXPORTS
         )
-    endif (SCCACHE)
-endfunction(set_common_build_tools)
+    endif ()
+endfunction(set_common_hidden_visibility)
 
 function(set_common_compiler_options TARGET)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -48,11 +48,12 @@ function(set_common_compiler_options TARGET)
             PRIVATE
             $<$<CONFIG:Release>:
             -Ofast
+
             -ffunction-sections
             -fdata-sections
             >
         )
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         target_compile_options(${TARGET}
             PRIVATE
             -stdlib=libc++
@@ -82,8 +83,41 @@ function(set_common_compiler_options TARGET)
 
             $<$<CONFIG:Release>:
             -O3
+
             -ffunction-sections
             -fdata-sections
+            >
+        )
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+        target_compile_options(${TARGET}
+            PRIVATE
+            -stdlib=libc++
+
+            -Wall
+            -Wextra
+            -Wpedantic
+
+            $<$<CONFIG:Release>:
+            -ffast-math
+            >
+
+            $<$<CONFIG:Debug>:
+            -g3
+            -glldb
+            -Og
+            >
+
+            $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:
+            -march=native
+            >
+        )
+
+        target_link_options(${TARGET}
+            PRIVATE
+            -stdlib=libc++
+
+            $<$<CONFIG:Release>:
+            -O3
             >
         )
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -170,16 +204,16 @@ function(set_common_linker_options TARGET)
     endif ()
 endfunction(set_common_linker_options)
 
-function(set_hidden_visibility TARGET)
-    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+function(set_common_build_tools TARGET)
+    if (SCCACHE)
+        find_program(SCCACHE_EXEC sccache)
+
         set_target_properties(${TARGET}
             PROPERTIES
-            CXX_VISIBILITY_PRESET hidden
-            VISIBILITY_INLINES_HIDDEN ON
-            DEFINE_SYMBOL CPP_DEMO_EXPORTS
+            RULE_LAUNCH_COMPILE ${SCCACHE_EXEC}
         )
-    endif ()
-endfunction(set_hidden_visibility)
+    endif (SCCACHE)
+endfunction(set_common_build_tools)
 
 function(set_sanitizer TARGET)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR

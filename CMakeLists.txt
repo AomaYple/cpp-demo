@@ -12,13 +12,12 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CommonConfig.cmake)
 add_library(${PROJECT_NAME} SHARED)
 
 set_common_properties(${PROJECT_NAME})
-
-set_common_build_tools(${PROJECT_NAME})
+set_common_hidden_visibility(${PROJECT_NAME})
 
 set_common_compiler_options(${PROJECT_NAME})
 set_common_linker_options(${PROJECT_NAME})
 
-set_hidden_visibility(${PROJECT_NAME})
+set_common_build_tools(${PROJECT_NAME})
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
