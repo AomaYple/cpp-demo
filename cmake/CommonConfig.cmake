@@ -44,6 +44,7 @@ function(set_common_compiler_options TARGET)
 
         target_link_options(${TARGET}
             PRIVATE
+            $<$<CONFIG:Release>:
             -ffunction-sections
             -fdata-sections
             >
