@@ -38,7 +38,7 @@ function(set_common_compiler_options TARGET)
             >
 
             $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:
-            -mcpu=native
+            -march=native
             >
         )
 
