@@ -158,9 +158,6 @@ function(set_common_linker_options TARGET)
 
             $<$<CONFIG:Release>:
             LINKER:-dead_strip_dylibs
-            LINKER:-mark_dead_strippable_dylib
-
-            LINKER:-bind_at_load
 
             LINKER:-dead_strip
             LINKER:-merge_zero_fill_sections
