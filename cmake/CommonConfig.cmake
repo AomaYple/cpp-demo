@@ -124,7 +124,7 @@ function(set_common_linker_options TARGET)
             PRIVATE
             LINKER:--warn-common
             LINKER:--warn-once
-            LINKER:--execute-only
+            #LINKER:--execute-only
             LINKER:-z,rodynamic
 
             $<$<CONFIG:Debug>:
