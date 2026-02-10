@@ -118,6 +118,7 @@ function(set_common_linker_options TARGET)
     )
         target_link_options(${TARGET}
             PRIVATE
+            LINKER:--color-diagnostics
             LINKER:--warn-common
             LINKER:--warn-once
             LINKER:--execute-only
