@@ -118,7 +118,6 @@ function(set_common_linker_options TARGET)
     )
         target_link_options(${TARGET}
             PRIVATE
-            LINKER:--color-diagnostics
             LINKER:--warn-common
             LINKER:--warn-once
             LINKER:--execute-only
@@ -148,6 +147,8 @@ function(set_common_linker_options TARGET)
         if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
             target_link_options(${TARGET}
                 PRIVATE
+                LINKER:--color-diagnostics
+
                 $<$<CONFIG:Release>:
                 LINKER:--icf=all
                 LINKER:--ignore-data-address-equality
