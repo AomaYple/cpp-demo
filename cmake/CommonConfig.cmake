@@ -213,7 +213,6 @@ function(set_common_linker_options TARGET)
             PRIVATE
             $<$<CONFIG:Release>:
             /OPT:REF,ICF=9,LBR
-            /LTCG
             >
         )
     endif ()
