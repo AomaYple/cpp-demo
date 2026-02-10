@@ -120,8 +120,10 @@ function(set_common_linker_options TARGET)
             PRIVATE
             LINKER:--warn-common
             LINKER:--warn-once
+            LINKER:--execute-only
 
             $<$<CONFIG:Debug>:
+            LINKER:--gdb-index
             LINKER:--compress-debug-sections=zstd
             >
 
