@@ -143,20 +143,54 @@ function(set_common_linker_options TARGET)
             LINKER:-s
             >
         )
+    endif ()
 
-        if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
+    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
+        target_link_options(${TARGET}
+            PRIVATE
+            LINKER:--color-diagnostics
+
+            $<$<CONFIG:Release>:
+            LINKER:--icf=all
+            LINKER:--ignore-data-address-equality
+            LINKER:--pack-dyn-relocs=relr
+            >
+        )
+    endif ()
+
+    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD")
+        target_link_options(${TARGET}
+            PRIVATE
+            $<$<CONFIG:Release>:
+            LINKER:-O2
+            >
+        )
+
+        if (CMAKE_SYSTEM_NAME STREQUAL "Android" OR CMAKE_SYSTEM_NAME STREQUAL "OHOS")
             target_link_options(${TARGET}
                 PRIVATE
-                LINKER:--color-diagnostics
-
                 $<$<CONFIG:Release>:
-                LINKER:--icf=all
-                LINKER:--ignore-data-address-equality
-                LINKER:--pack-dyn-relocs=relr
+                LINKER:--use-android-relr-tags
                 >
             )
         endif ()
-    elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "AppleClang")
+    endif ()
+
+    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
+        target_link_options(${TARGET}
+            PRIVATE
+            $<$<CONFIG:Debug>:
+            LINKER:--separate-debug-file
+            >
+
+            $<$<CONFIG:Release>:
+            LINKER:-z,rewrite-endbr
+            #LINKER:--zero-to-bss
+            >
+        )
+    endif ()
+
+    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "AppleClang")
         target_link_options(${TARGET}
             PRIVATE
             LINKER:-warn_commons
@@ -171,23 +205,14 @@ function(set_common_linker_options TARGET)
             LINKER:-x
             >
         )
-    elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MSVC")
+    endif ()
+
+    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MSVC")
         target_link_options(${TARGET}
             PRIVATE
             $<$<CONFIG:Release>:
             /OPT:REF,ICF=9,LBR
             /LTCG
-            >
-        )
-    else ()
-        message(FATAL_ERROR "Unsupported linker: ${CMAKE_CXX_COMPILER_LINKER_ID}")
-    endif ()
-
-    if (CMAKE_SYSTEM_NAME STREQUAL "Android")
-        target_link_options(${TARGET}
-            PRIVATE
-            $<$<CONFIG:Release>:
-            LINKER:--pack-dyn-relocs=android+relr
             >
         )
     endif ()
