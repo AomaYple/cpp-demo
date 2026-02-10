@@ -164,6 +164,7 @@ function(set_common_linker_options TARGET)
             PRIVATE
             $<$<CONFIG:Release>:
             LINKER:-O2
+            LINKER:--ignore-function-address-equality
             >
         )
 
