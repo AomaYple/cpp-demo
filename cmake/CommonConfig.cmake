@@ -125,7 +125,6 @@ function(set_common_linker_options TARGET)
             LINKER:-z,rodynamic
 
             $<$<CONFIG:Debug>:
-            LINKER:--gdb-index
             LINKER:--compress-debug-sections=zstd
             >
 
@@ -151,6 +150,10 @@ function(set_common_linker_options TARGET)
         target_link_options(${TARGET}
             PRIVATE
             LINKER:--color-diagnostics
+
+            $<$<CONFIG:Debug>:
+            LINKER:--gdb-index
+            >
 
             $<$<CONFIG:Release>:
             LINKER:--icf=all
