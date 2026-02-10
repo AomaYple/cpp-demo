@@ -34,6 +34,7 @@ function(set_common_compiler_options TARGET)
 
             $<$<CONFIG:Debug>:
             -g3
+            -ggdb3
             -Og
             >
 
@@ -54,10 +55,6 @@ function(set_common_compiler_options TARGET)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         target_compile_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Debug>:
-            -ggdb3
-            >
-
             $<$<CONFIG:Release>:
             -Ofast
             >
