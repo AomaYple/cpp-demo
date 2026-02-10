@@ -121,7 +121,7 @@ function(set_common_linker_options TARGET)
             PRIVATE
             LINKER:--warn-common
             LINKER:--warn-once
-            #LINKER:--execute-only
+            #LINKER:--execute-only # 适用于aarch64下的可执行文件
             LINKER:-z,rodynamic
 
             $<$<CONFIG:Debug>:
@@ -140,6 +140,7 @@ function(set_common_linker_options TARGET)
             LINKER:-z,now
 
             LINKER:--gc-sections
+            #LINKER:-z,nosectionheader # 适用于可执行文件
 
             LINKER:-s
             >
