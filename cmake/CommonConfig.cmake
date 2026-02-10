@@ -121,8 +121,6 @@ function(set_common_linker_options TARGET)
             PRIVATE
             LINKER:--warn-common
             LINKER:--warn-once
-            #LINKER:--execute-only # 适用于aarch64下的可执行文件
-            LINKER:-z,rodynamic
 
             $<$<CONFIG:Debug>:
             LINKER:--compress-debug-sections=zstd
@@ -131,6 +129,8 @@ function(set_common_linker_options TARGET)
             $<$<CONFIG:Release>:
             LINKER:--no-undefined
             LINKER:--as-needed
+
+            #LINKER:--execute-only # 适用于aarch64下的可执行文件
 
             LINKER:--hash-style=gnu
 
@@ -156,6 +156,8 @@ function(set_common_linker_options TARGET)
             >
 
             $<$<CONFIG:Release>:
+            LINKER:-z,rodynamic
+
             LINKER:--icf=all
             LINKER:--ignore-data-address-equality
             LINKER:--pack-dyn-relocs=relr
