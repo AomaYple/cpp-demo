@@ -121,6 +121,7 @@ function(set_common_linker_options TARGET)
             LINKER:--warn-common
             LINKER:--warn-once
             LINKER:--execute-only
+            LINKER:-z,rodynamic
 
             $<$<CONFIG:Debug>:
             LINKER:--gdb-index
