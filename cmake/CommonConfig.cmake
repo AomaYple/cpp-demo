@@ -11,7 +11,7 @@ function(set_common_properties TARGET)
 endfunction(set_common_properties)
 
 function(set_common_visibility_hidden TARGET)
-    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
         set_target_properties(${TARGET}
             PROPERTIES
             CXX_VISIBILITY_PRESET hidden
