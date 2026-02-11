@@ -4,9 +4,6 @@ project(cpp-demo VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_FIND_REQUIRED ON)
 
-option(SCCACHE "Enable sccache")
-option(NATIVE "Enable native optimization")
-
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CommonConfig.cmake)
 
 add_library(${PROJECT_NAME} SHARED)

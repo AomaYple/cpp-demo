@@ -21,6 +21,7 @@ function(set_common_visibility_hidden TARGET)
     endif ()
 endfunction(set_common_visibility_hidden)
 
+option(NATIVE "Enable native optimization")
 function(set_common_compiler_options TARGET)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
@@ -203,6 +204,7 @@ function(set_common_linker_options TARGET)
     endif ()
 endfunction(set_common_linker_options)
 
+option(SCCACHE "Enable sccache")
 function(set_common_build_tools TARGET)
     if (SCCACHE)
         find_program(SCCACHE_EXEC sccache)
