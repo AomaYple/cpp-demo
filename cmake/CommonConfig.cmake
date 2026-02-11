@@ -140,61 +140,48 @@ function(set_common_linker_options TARGET)
             LINKER:-s
             >
         )
-    endif ()
 
-    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
-        target_link_options(${TARGET}
-            PRIVATE
-            LINKER:--color-diagnostics
-
-            $<$<CONFIG:Debug>:
-            LINKER:--gdb-index
-            >
-
-            $<$<CONFIG:Release>:
-            LINKER:-z,rodynamic
-
-            LINKER:--icf=all
-            LINKER:--ignore-data-address-equality
-            LINKER:--pack-dyn-relocs=relr
-            >
-        )
-    endif ()
-
-    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD")
-        target_link_options(${TARGET}
-            PRIVATE
-            $<$<CONFIG:Release>:
-            LINKER:-O2
-            LINKER:--ignore-function-address-equality
-            >
-        )
-
-        if (CMAKE_SYSTEM_NAME STREQUAL "Android" OR CMAKE_SYSTEM_NAME STREQUAL "OHOS")
+        if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
             target_link_options(${TARGET}
                 PRIVATE
+                LINKER:--color-diagnostics
+
+                $<$<CONFIG:Debug>:
+                LINKER:--gdb-index
+                >
+
                 $<$<CONFIG:Release>:
-                LINKER:--use-android-relr-tags
+                LINKER:-z,rodynamic
+
+                LINKER:--icf=all
+                LINKER:--ignore-data-address-equality
+                LINKER:--pack-dyn-relocs=relr
                 >
             )
+
+            if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD")
+                target_link_options(${TARGET}
+                    PRIVATE
+                    $<$<CONFIG:Release>:
+                    LINKER:-O2
+                    LINKER:--ignore-function-address-equality
+                    >
+                )
+            else ()
+                target_link_options(${TARGET}
+                    PRIVATE
+                    $<$<CONFIG:Debug>:
+                    LINKER:--separate-debug-file
+                    >
+
+                    $<$<CONFIG:Release>:
+                    LINKER:-z,rewrite-endbr
+                    #LINKER:--zero-to-bss
+                    >
+                )
+            endif ()
         endif ()
-    endif ()
-
-    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD")
-        target_link_options(${TARGET}
-            PRIVATE
-            $<$<CONFIG:Debug>:
-            LINKER:--separate-debug-file
-            >
-
-            $<$<CONFIG:Release>:
-            LINKER:-z,rewrite-endbr
-            #LINKER:--zero-to-bss
-            >
-        )
-    endif ()
-
-    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "AppleClang")
+    elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "AppleClang")
         target_link_options(${TARGET}
             PRIVATE
             LINKER:-warn_commons
@@ -209,15 +196,15 @@ function(set_common_linker_options TARGET)
             LINKER:-x
             >
         )
-    endif ()
-
-    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MSVC")
+    elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MSVC")
         target_link_options(${TARGET}
             PRIVATE
             $<$<CONFIG:Release>:
             /OPT:REF,ICF=9,LBR
             >
         )
+    else ()
+        message(FATAL_ERROR "Unsupported linker: ${CMAKE_CXX_COMPILER_LINKER_ID}")
     endif ()
 endfunction(set_common_linker_options)
 
