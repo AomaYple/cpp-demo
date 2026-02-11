@@ -8,6 +8,7 @@ set_common_properties(${PROJECT_NAME})
 
 set_common_compiler_options(${PROJECT_NAME})
 set_common_linker_options(${PROJECT_NAME})
+set_common_strip(${PROJECT_NAME})
 
 set_common_build_tools(${PROJECT_NAME})
 

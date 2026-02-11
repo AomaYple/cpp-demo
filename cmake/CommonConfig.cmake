@@ -132,8 +132,6 @@ function(set_common_linker_options TARGET)
 
             LINKER:--gc-sections
             #LINKER:-z,nosectionheader # 适用于可执行文件
-
-            LINKER:-s
             >
         )
 
@@ -187,9 +185,6 @@ function(set_common_linker_options TARGET)
 
             LINKER:-dead_strip
             LINKER:-merge_zero_fill_sections
-
-            LINKER:-S
-            LINKER:-x
             >
         )
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MSVC")
@@ -203,6 +198,30 @@ function(set_common_linker_options TARGET)
         message(FATAL_ERROR "Unsupported linker: ${CMAKE_CXX_COMPILER_LINKER_ID}")
     endif ()
 endfunction(set_common_linker_options)
+
+function(set_common_strip TARGET)
+    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "GNU" OR
+        CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD" OR
+        CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD"
+    )
+        target_link_options(${TARGET}
+            PRIVATE
+            $<$<NOT:$<CONFIG:Debug>>:
+            LINKER:-s
+            >
+        )
+    elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "AppleClang")
+        target_link_options(${TARGET}
+            PRIVATE
+            $<$<NOT:$<CONFIG:Debug>>:
+            LINKER:-S
+            LINKER:-x
+            >
+        )
+    else ()
+        message(FATAL_ERROR "Unsupported linker: ${CMAKE_CXX_COMPILER_LINKER_ID}")
+    endif ()
+endfunction(set_common_strip)
 
 option(SCCACHE "Enable sccache")
 function(set_common_build_tools TARGET)
