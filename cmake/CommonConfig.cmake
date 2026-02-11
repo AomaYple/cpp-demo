@@ -50,52 +50,46 @@ function(set_common_compiler_options TARGET)
             -fdata-sections
             >
         )
-    endif ()
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        target_compile_options(${TARGET}
-            PRIVATE
-            $<$<CONFIG:Release>:
-            -Ofast
-            >
-        )
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            target_compile_options(${TARGET}
+                PRIVATE
+                $<$<CONFIG:Release>:
+                -Ofast
+                >
+            )
 
-        target_link_options(${TARGET}
-            PRIVATE
-            $<$<CONFIG:Release>:
-            -Ofast
-            >
-        )
-    endif ()
+            target_link_options(${TARGET}
+                PRIVATE
+                $<$<CONFIG:Release>:
+                -Ofast
+                >
+            )
+        else ()
+            target_compile_options(${TARGET}
+                PRIVATE
+                -stdlib=libc++
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
-        CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
-    )
-        target_compile_options(${TARGET}
-            PRIVATE
-            -stdlib=libc++
+                $<$<CONFIG:Debug>:
+                -glldb
+                >
 
-            $<$<CONFIG:Debug>:
-            -glldb
-            >
+                $<$<CONFIG:Release>:
+                -ffast-math
+                >
+            )
 
-            $<$<CONFIG:Release>:
-            -ffast-math
-            >
-        )
+            target_link_options(${TARGET}
+                PRIVATE
+                -stdlib=libc++
 
-        target_link_options(${TARGET}
-            PRIVATE
-            -stdlib=libc++
-
-            $<$<CONFIG:Release>:
-            -O3
-            -ffast-math
-            >
-        )
-    endif ()
-
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+                $<$<CONFIG:Release>:
+                -O3
+                -ffast-math
+                >
+            )
+        endif ()
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_compile_options(${TARGET}
             PRIVATE
             /utf-8
@@ -109,6 +103,8 @@ function(set_common_compiler_options TARGET)
             /fp:fast
             >
         )
+    else ()
+        message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
     endif ()
 endfunction(set_common_compiler_options)
 
