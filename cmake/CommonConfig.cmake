@@ -38,7 +38,7 @@ function(set_common_compiler_options TARGET)
             -Og
             >
 
-            $<$<AND:$<CONFIG:Release>,$<BOOL:${NATIVE}>>:
+            $<$<AND:$<NOT:$<CONFIG:Debug>>,$<BOOL:${NATIVE}>>:
             -march=native
             >
         )
