@@ -10,7 +10,7 @@ function(set_common_properties TARGET)
     )
 endfunction(set_common_properties)
 
-function(set_common_hidden_visibility TARGET)
+function(set_common_visibility_hidden TARGET)
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
         set_target_properties(${TARGET}
             PROPERTIES
@@ -19,7 +19,7 @@ function(set_common_hidden_visibility TARGET)
             DEFINE_SYMBOL CPP_DEMO_EXPORTS
         )
     endif ()
-endfunction(set_common_hidden_visibility)
+endfunction(set_common_visibility_hidden)
 
 function(set_common_compiler_options TARGET)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
