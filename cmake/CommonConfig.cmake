@@ -45,7 +45,7 @@ function(set_common_compiler_options TARGET)
 
         target_link_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Release>:
+            $<$<NOT:$<CONFIG:Debug>>:
             -ffunction-sections
             -fdata-sections
             >
@@ -54,14 +54,14 @@ function(set_common_compiler_options TARGET)
         if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             target_compile_options(${TARGET}
                 PRIVATE
-                $<$<CONFIG:Release>:
+                $<$<NOT:$<CONFIG:Debug>>:
                 -Ofast
                 >
             )
 
             target_link_options(${TARGET}
                 PRIVATE
-                $<$<CONFIG:Release>:
+                $<$<NOT:$<CONFIG:Debug>>:
                 -Ofast
                 >
             )
@@ -74,7 +74,7 @@ function(set_common_compiler_options TARGET)
                 -glldb
                 >
 
-                $<$<CONFIG:Release>:
+                $<$<NOT:$<CONFIG:Debug>>:
                 -ffast-math
                 >
             )
@@ -83,7 +83,7 @@ function(set_common_compiler_options TARGET)
                 PRIVATE
                 -stdlib=libc++
 
-                $<$<CONFIG:Release>:
+                $<$<NOT:$<CONFIG:Debug>>:
                 -O3
                 -ffast-math
                 >
@@ -97,7 +97,7 @@ function(set_common_compiler_options TARGET)
             /W4
             /MP
 
-            $<$<CONFIG:Release>:
+            $<$<NOT:$<CONFIG:Debug>>:
             /Ob3
             /GT
             /fp:fast
@@ -122,7 +122,7 @@ function(set_common_linker_options TARGET)
             LINKER:--compress-debug-sections=zstd
             >
 
-            $<$<CONFIG:Release>:
+            $<$<NOT:$<CONFIG:Debug>>:
             LINKER:--no-undefined
             LINKER:--as-needed
 
@@ -150,7 +150,7 @@ function(set_common_linker_options TARGET)
                 LINKER:--gdb-index
                 >
 
-                $<$<CONFIG:Release>:
+                $<$<NOT:$<CONFIG:Debug>>:
                 LINKER:-z,rodynamic
 
                 LINKER:--icf=all
@@ -162,7 +162,7 @@ function(set_common_linker_options TARGET)
             if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD")
                 target_link_options(${TARGET}
                     PRIVATE
-                    $<$<CONFIG:Release>:
+                    $<$<NOT:$<CONFIG:Debug>>:
                     LINKER:-O2
                     LINKER:--ignore-function-address-equality
                     >
@@ -174,7 +174,7 @@ function(set_common_linker_options TARGET)
                     LINKER:--separate-debug-file
                     >
 
-                    $<$<CONFIG:Release>:
+                    $<$<NOT:$<CONFIG:Debug>>:
                     LINKER:-z,rewrite-endbr
                     #LINKER:--zero-to-bss
                     >
@@ -186,7 +186,7 @@ function(set_common_linker_options TARGET)
             PRIVATE
             LINKER:-warn_commons
 
-            $<$<CONFIG:Release>:
+            $<$<NOT:$<CONFIG:Debug>>:
             LINKER:-dead_strip_dylibs
 
             LINKER:-dead_strip
@@ -199,7 +199,7 @@ function(set_common_linker_options TARGET)
     elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MSVC")
         target_link_options(${TARGET}
             PRIVATE
-            $<$<CONFIG:Release>:
+            $<$<NOT:$<CONFIG:Debug>>:
             /OPT:REF,ICF=9,LBR
             >
         )
