@@ -26,16 +26,30 @@ function(set_common_compiler_options TARGET)
         CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
         CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
     )
+        set(OPTIMIZE_FLAGS "")
+        if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+            set(OPTIMIZE_FLAGS "-Og")
+        elseif (CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+            set(OPTIMIZE_FLAGS "-Os")
+        elseif (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+            set(OPTIMIZE_FLAGS "-O2")
+        elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+            set(OPTIMIZE_FLAGS "-O3")
+        else ()
+            message(FATAL_ERROR "Unknown CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+        endif ()
+
         target_compile_options(${TARGET}
             PRIVATE
             -Wall
             -Wextra
             -Wpedantic
 
+            ${OPTIMIZE_FLAGS}
+
             $<$<CONFIG:Debug>:
             -g3
             -ggdb3
-            -Og
             >
 
             $<$<AND:$<NOT:$<CONFIG:Debug>>,$<BOOL:${NATIVE}>>:
@@ -45,27 +59,15 @@ function(set_common_compiler_options TARGET)
 
         target_link_options(${TARGET}
             PRIVATE
+            ${OPTIMIZE_FLAGS}
+
             $<$<NOT:$<CONFIG:Debug>>:
             -ffunction-sections
             -fdata-sections
             >
         )
 
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            target_compile_options(${TARGET}
-                PRIVATE
-                $<$<NOT:$<CONFIG:Debug>>:
-                -Ofast
-                >
-            )
-
-            target_link_options(${TARGET}
-                PRIVATE
-                $<$<NOT:$<CONFIG:Debug>>:
-                -Ofast
-                >
-            )
-        else ()
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             target_compile_options(${TARGET}
                 PRIVATE
                 -stdlib=libc++
@@ -73,20 +75,11 @@ function(set_common_compiler_options TARGET)
                 $<$<CONFIG:Debug>:
                 -glldb
                 >
-
-                $<$<NOT:$<CONFIG:Debug>>:
-                -ffast-math
-                >
             )
 
             target_link_options(${TARGET}
                 PRIVATE
                 -stdlib=libc++
-
-                $<$<NOT:$<CONFIG:Debug>>:
-                -O3
-                -ffast-math
-                >
             )
         endif ()
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -98,9 +91,11 @@ function(set_common_compiler_options TARGET)
             /MP
 
             $<$<NOT:$<CONFIG:Debug>>:
-            /Ob3
             /GT
-            /fp:fast
+            >
+
+            $<$<CONFIG:Release>:
+            /Ob3
             >
         )
     else ()
