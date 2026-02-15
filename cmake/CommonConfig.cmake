@@ -225,7 +225,7 @@ function(set_common_lto TARGET)
                 $<$<NOT:$<CONFIG:Debug>>:
                 -fuse-linker-plugin
 
-                -fwhole-program
+                #-fwhole-program # 适用于可执行文件
                 >
             )
 
@@ -234,14 +234,14 @@ function(set_common_lto TARGET)
                 $<$<NOT:$<CONFIG:Debug>>:
                 -fuse-linker-plugin
 
-                -fwhole-program
+                #-fwhole-program # 适用于可执行文件
                 >
             )
         else ()
             target_compile_options(${TARGET}
                 PRIVATE
                 $<$<NOT:$<CONFIG:Debug>>:
-                -fwhole-program-vtables
+                #-fwhole-program-vtables # 适用于可执行文件
                 -fvirtual-function-elimination
                 >
             )
@@ -249,7 +249,7 @@ function(set_common_lto TARGET)
             target_link_options(${TARGET}
                 PRIVATE
                 $<$<NOT:$<CONFIG:Debug>>:
-                -fwhole-program-vtables
+                #-fwhole-program-vtables # 适用于可执行文件
                 -fvirtual-function-elimination
                 >
             )
