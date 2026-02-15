@@ -6,7 +6,6 @@ function(set_common_properties TARGET)
         CXX_EXTENSIONS OFF
         COMPILE_WARNING_AS_ERROR ON
         LINK_WARNING_AS_ERROR ON
-        INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
     )
 endfunction(set_common_properties)
 
@@ -198,6 +197,105 @@ function(set_common_linker_options TARGET)
         message(FATAL_ERROR "Unsupported linker: ${CMAKE_CXX_COMPILER_LINKER_ID}")
     endif ()
 endfunction(set_common_linker_options)
+
+function(set_common_lto TARGET)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+        CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+        CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
+    )
+        target_compile_options(${TARGET}
+            PRIVATE
+            $<$<NOT:$<CONFIG:Debug>>:
+            -flto
+            -fno-fat-lto-objects
+            >
+        )
+
+        target_link_options(${TARGET}
+            PRIVATE
+            $<$<NOT:$<CONFIG:Debug>>:
+            -flto
+            -fno-fat-lto-objects
+            >
+        )
+
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            target_compile_options(${TARGET}
+                PRIVATE
+                $<$<NOT:$<CONFIG:Debug>>:
+                -fuse-linker-plugin
+
+                -fwhole-program
+                >
+            )
+
+            target_link_options(${TARGET}
+                PRIVATE
+                $<$<NOT:$<CONFIG:Debug>>:
+                -fuse-linker-plugin
+
+                -fwhole-program
+                >
+            )
+        else ()
+            target_compile_options(${TARGET}
+                PRIVATE
+                $<$<NOT:$<CONFIG:Debug>>:
+                -fwhole-program-vtables
+                -fvirtual-function-elimination
+                >
+            )
+
+            target_link_options(${TARGET}
+                PRIVATE
+                $<$<NOT:$<CONFIG:Debug>>:
+                -fwhole-program-vtables
+                -fvirtual-function-elimination
+                >
+            )
+
+            if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+                target_compile_options(${TARGET}
+                    PRIVATE
+                    $<$<NOT:$<CONFIG:Debug>>:
+                    -funified-lto
+                    >
+                )
+
+                target_link_options(${TARGET}
+                    PRIVATE
+                    $<$<NOT:$<CONFIG:Debug>>:
+                    -funified-lto
+                    >
+                )
+            endif ()
+        endif ()
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        target_compile_options(${TARGET}
+            PRIVATE
+            $<$<NOT:$<CONFIG:Debug>>:
+            /GL
+            >
+        )
+    else ()
+        message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
+    endif ()
+
+    if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "LLD")
+        target_link_options(${TARGET}
+            PRIVATE
+            $<$<NOT:$<CONFIG:Debug>>:
+            LINKER:--lto-O3
+            >
+        )
+    elseif (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "GNU" OR
+        CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "AppleClang" OR
+        CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "MOLD"
+    )
+    else ()
+        message(FATAL_ERROR "Unsupported linker: ${CMAKE_CXX_COMPILER_LINKER_ID}")
+    endif ()
+endfunction(set_common_lto)
 
 function(set_common_strip TARGET)
     if (CMAKE_CXX_COMPILER_LINKER_ID STREQUAL "GNU" OR
