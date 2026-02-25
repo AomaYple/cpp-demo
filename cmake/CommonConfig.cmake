@@ -1,3 +1,16 @@
+set(OPTIMIZE_FLAGS "")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(OPTIMIZE_FLAGS "-Og")
+elseif (CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+    set(OPTIMIZE_FLAGS "-Os")
+elseif (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    set(OPTIMIZE_FLAGS "-O2")
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(OPTIMIZE_FLAGS "-O3")
+else ()
+    message(FATAL_ERROR "Unknown CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+endif ()
+
 function(set_common_properties TARGET)
     set_target_properties(${TARGET}
         PROPERTIES
@@ -26,19 +39,6 @@ function(set_common_compiler_options TARGET)
         CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
         CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
     )
-        set(OPTIMIZE_FLAGS "")
-        if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-            set(OPTIMIZE_FLAGS "-Og")
-        elseif (CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-            set(OPTIMIZE_FLAGS "-Os")
-        elseif (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-            set(OPTIMIZE_FLAGS "-O2")
-        elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
-            set(OPTIMIZE_FLAGS "-O3")
-        else ()
-            message(FATAL_ERROR "Unknown CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-        endif ()
-
         target_compile_options(${TARGET}
             PRIVATE
             -Wall
